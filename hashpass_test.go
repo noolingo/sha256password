@@ -19,8 +19,9 @@ func randomPass(rng *rand.Rand) string {
 func TestRandomHash(t *testing.T) {
 	seed := time.Now().UTC().UnixNano()
 	t.Logf("Random seed: %d", seed)
-	for i :=0; i < 1000; i++{
+	rng := rand.New(rand.NewSource(seed))
+	for i := 0; i < 1000; i++ {
 		pass := randomPass(rng)
-		hashpass :=
+		hashpass := 
 	}
 }
