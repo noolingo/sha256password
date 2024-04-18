@@ -1,4 +1,4 @@
-package sha256password_test
+package sha256password
 
 import (
 	"math/rand"
@@ -20,8 +20,11 @@ func TestRandomHash(t *testing.T) {
 	seed := time.Now().UTC().UnixNano()
 	t.Logf("Random seed: %d", seed)
 	rng := rand.New(rand.NewSource(seed))
-	for i := 0; i < 1000; i++ {
+	for i := 0; i < 10000; i++ {
 		pass := randomPass(rng)
-		hashpass := 
+		hashpass, _ := EncryptPassword(pass)
+		if !CompWithEncrypted(pass, hashpass) {
+			t.Errorf("CheskPass(%q, %q) = false", pass, hashpass)
+		}
 	}
 }

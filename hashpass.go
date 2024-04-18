@@ -1,14 +1,37 @@
 package sha256password
 
-import "crypto/sha256"
+import (
+	"crypto/rand"
+	"crypto/sha256"
+	"fmt"
+	"strings"
+)
 
-func PassHash(password string) string {
-	hashpass := sha256.Sum256([]byte(password))
-	return string(hashpass[:])
+func generateSalt() (string, error) {
+	buf := make([]byte, 8)
+	_, err := rand.Read(buf)
+	if err != nil {
+		return "", err
+	}
+	return fmt.Sprintf("%x", buf), nil
 }
 
-func CheckPass(verpassword, passwordbd string) bool {
-	tmp := sha256.Sum224([]byte(verpassword))
-	verpassword = string(tmp[:])
-	return verpassword == passwordbd
+func EncryptPassword(password string) (string, error) {
+	salt, err := generateSalt()
+	if err != nil {
+		return "", err
+	}
+	saltedPassword := salt + password
+	sumPassword := sha256.Sum256([]byte(saltedPassword))
+	return fmt.Sprintf("%v:%v", salt, sumPassword), nil
+}
+
+func CompWithEncrypted(password, encpassword string) bool {
+	encPasPart := strings.Split(encpassword, ":")
+	if len(encPasPart) != 2 {
+		return false
+	}
+	saltedPassword := encPasPart[0] + password
+	sumPassword := sha256.Sum256([]byte(saltedPassword))
+	return fmt.Sprintf("%v", sumPassword) == encPasPart[1]
 }
