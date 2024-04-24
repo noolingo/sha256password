@@ -1,3 +1,3 @@
-module github.com/MelnikovNA/sha256password
+module github.com/noolingo/proto
 
 go 1.22.2
